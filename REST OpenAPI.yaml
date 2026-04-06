@@ -1,0 +1,834 @@
+openapi: 3.0.0
+info:
+  title: StreamFlow API
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '409': 
+          description: Номер уже зарегистрирован
+        '502':
+          description: SMS-шлюз недоступен
+  /auth/verify-code:
+    post:
+      summary: Подтверждение кода из SMS
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидный код
+        '410':
+          description: Код истек
+  /auth/login:
+    post:
+      summary: Вход по паролю
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '401':
+          description: Неверный номер телефона или пароль
+        '502':
+          description: SMS-шлюз недоступен
+  /users/{id}:
+    get:
+      summary: Получение информации о пользователе
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+    patch:
+      summary: Редактирование информации о пользователе
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+    delete:
+      summary: Удаление пользователя
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+  /users/{id}/role:
+    get:
+      summary: Получение роли пользователя
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+  /channels:
+    post:
+      summary: Создание нового канала
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel_name:
+                  type: string
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+    get:
+      summary: Получение списка каналов
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+  /channels/{id}:
+    get:
+      summary: Получение информации о канале
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+    patch:
+      summary: Редактирование информации о канале
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel_name:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+    delete:
+      summary: Удаление канала
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+  /channels/{id}/followers:
+    get:
+      summary: Получить список отслеживающих канал
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+    post:
+      summary: Отслеживать канал
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+    delete:
+      summary: Перестать отслеживать канал
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+  /channels/{id}/moderators:
+    get:
+      summary: Получение списка модераторов канала
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+    post:
+      summary: Назначение модератора канала
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал или пользователь не найден
+    delete:
+      summary: Снятие модератора с канала
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал или пользователь не найден
+  /streams:
+    post:
+      summary: Создание нового стрима
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                channel_id:
+                  type: integer
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+  /streams/{id}:
+    get:
+      summary: Получение информации о стриме
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+    patch:
+      summary: Редактирование информации о стриме
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+    delete:
+      summary: Удаление стрима
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+  /streams/{id}/stream-key:
+    get:
+      summary: Получение stream key для стрима
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+  /streams/{id}/messages:
+    post:
+      summary: Отправка сообщения в чат стрима
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+    get:
+      summary: Получение сообщений из чата стрима
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим не найден
+  /streams/{id}/messages/{message_id}:
+    delete:
+      summary: Удаление сообщения из чата стрима
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: message_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Стрим или сообщение не найдено
+  /vods/{id}:
+    get:
+      summary: Получение информации о VOD
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: VOD не найден
+    patch:
+      summary: Редактирование информации о VOD
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: VOD не найден
+    delete:
+      summary: Удаление VOD
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: VOD не найден  
+  /subscriptions:
+    post:
+      summary: Оформление подписки на канал
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel_id:
+                  type: integer
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Канал не найден
+  /subscriptions/{id}:
+    get:
+      summary: Получение информации о подписке
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Подписка не найдена
+    patch:
+      summary: Редактирование подписки
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Подписка не найдена
+    delete:
+      summary: Отмена подписки
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Подписка не найдена
+  /moderation:
+    post:
+      summary: Модерация контента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_user_id:
+                  type: integer
+                channel_id:
+                  type: integer
+                type:
+                  type: string
+                  enum: [mute, local_ban, global_ban]
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+    get:
+      summary: Получение отчетов о модерации
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+  /moderation/{id}:
+    get:
+      summary: Получение информации о конкретном случае модерации
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Случай модерации не найден
+    patch:
+      summary: Редактирование срока санкции
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Санкция не найдена
+    delete:
+      summary: Удаление случая модерации
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Случай модерации не найден
+  /reports:
+    post:
+      summary: Подача жалобы на контент
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target_user_id:
+                  type: integer
+                reason:
+                  type: string
+      responses:
+        '201':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Пользователь не найден
+    get:
+      summary: Получение отчетов о жалобах
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+  /reports/{id}:
+    get:
+      summary: Получение информации о конкретной жалобе
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Жалоба не найдена
+    patch:
+      summary: Редактирование статуса жалобы
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [New, In_Progress, Closed]
+      responses:
+        '200':
+          description: Успех
+        '400':
+          description: Невалидные данные
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Жалоба не найдена
+    delete: 
+      summary: Удаление жалобы
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успех
+        '403':
+          description: Доступ запрещен
+        '404':
+          description: Жалоба не найдена
+  /webhooks/payment:
+    post:
+      summary: Получение статуса оплаты от платежной системы
+      responses:
+        '200':
+          description: Успех

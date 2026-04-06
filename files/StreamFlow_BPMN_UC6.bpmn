@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0i9bxoo" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.44.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:collaboration id="Collaboration_08m76jj">
+    <bpmn:participant id="Participant_04l58qe" name="UC-06: Настройка и запуск стрима" processRef="Process_1v22lqf" />
+    <bpmn:participant id="Participant_0yltzzo" name="Стриминговое ПО" />
+    <bpmn:messageFlow id="Flow_19vckkf" sourceRef="Participant_0yltzzo" targetRef="Activity_1kfw0c9" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1v22lqf" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_08gibbf">
+      <bpmn:lane id="Lane_1omr2fk" name="Стример">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0izepoj</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_12j3uys</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0g88wcm" name="Система">
+        <bpmn:flowNodeRef>Event_1auroqj</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1kfw0c9</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_14vn81d</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1vp3vsp</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1dzy5hn</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1k48slw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1vp9xn2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="Flow_0ttgx85" sourceRef="StartEvent_1" targetRef="Activity_0izepoj" />
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0ttgx85</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0j3taja" sourceRef="Activity_0izepoj" targetRef="Activity_12j3uys" />
+    <bpmn:sequenceFlow id="Flow_0zctkgx" sourceRef="Activity_12j3uys" targetRef="Activity_1vp3vsp" />
+    <bpmn:sequenceFlow id="Flow_09x12oz" sourceRef="Activity_1vp3vsp" targetRef="Activity_1kfw0c9" />
+    <bpmn:sequenceFlow id="Flow_1414gzu" sourceRef="Activity_1kfw0c9" targetRef="Activity_1dzy5hn" />
+    <bpmn:sequenceFlow id="Flow_0hi3snl" sourceRef="Activity_1dzy5hn" targetRef="Activity_14vn81d" />
+    <bpmn:endEvent id="Event_1auroqj">
+      <bpmn:incoming>Flow_02qiumw</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_02qiumw" sourceRef="Activity_14vn81d" targetRef="Event_1auroqj" />
+    <bpmn:userTask id="Activity_0izepoj" name="Нажать &#34;Настроить и запустить стрим&#34;">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ttgx85</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j3taja</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_12j3uys" name="Настроить стрим">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0j3taja</bpmn:incoming>
+      <bpmn:incoming>Flow_1l6m5l7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zctkgx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:receiveTask id="Activity_1kfw0c9" name="Ожидание стримингового ПО">
+      <bpmn:incoming>Flow_09x12oz</bpmn:incoming>
+      <bpmn:outgoing>Flow_1414gzu</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:serviceTask id="Activity_14vn81d" name="Уведомить пользователя">
+      <bpmn:incoming>Flow_0hi3snl</bpmn:incoming>
+      <bpmn:outgoing>Flow_02qiumw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1vp3vsp" name="Отобразить Stream Key">
+      <bpmn:incoming>Flow_0zctkgx</bpmn:incoming>
+      <bpmn:outgoing>Flow_09x12oz</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_1vp9xn2" attachedToRef="Activity_1kfw0c9">
+      <bpmn:outgoing>Flow_0fhnh2x</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_107lddi" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0fhnh2x" sourceRef="Event_1vp9xn2" targetRef="Activity_1k48slw" />
+    <bpmn:serviceTask id="Activity_1dzy5hn" name="Перевести канал в статус live">
+      <bpmn:incoming>Flow_1414gzu</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hi3snl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="Activity_1k48slw" name="Выдать ошибку таймаута">
+      <bpmn:incoming>Flow_0fhnh2x</bpmn:incoming>
+      <bpmn:outgoing>Flow_1l6m5l7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1l6m5l7" sourceRef="Activity_1k48slw" targetRef="Activity_12j3uys" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_08m76jj">
+      <bpmndi:BPMNShape id="Participant_04l58qe_di" bpmnElement="Participant_04l58qe" isHorizontal="true">
+        <dc:Bounds x="132" y="80" width="826" height="380" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0g88wcm_di" bpmnElement="Lane_0g88wcm" isHorizontal="true">
+        <dc:Bounds x="162" y="223" width="796" height="237" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1omr2fk_di" bpmnElement="Lane_1omr2fk" isHorizontal="true">
+        <dc:Bounds x="162" y="80" width="796" height="143" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="202" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1auroqj_di" bpmnElement="Event_1auroqj">
+        <dc:Bounds x="902" y="272" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0rfu3mz_di" bpmnElement="Activity_0izepoj">
+        <dc:Bounds x="290" y="110" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nvmy2t_di" bpmnElement="Activity_12j3uys">
+        <dc:Bounds x="450" y="110" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1f7vekc_di" bpmnElement="Activity_1kfw0c9">
+        <dc:Bounds x="600" y="360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0j20u7i_di" bpmnElement="Activity_14vn81d">
+        <dc:Bounds x="750" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ll0g8m_di" bpmnElement="Activity_1vp3vsp">
+        <dc:Bounds x="450" y="360" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00g5qf8_di" bpmnElement="Activity_1dzy5hn">
+        <dc:Bounds x="750" y="360" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1k48slw_di" bpmnElement="Activity_1k48slw">
+        <dc:Bounds x="600" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1geyvr0_di" bpmnElement="Event_1vp9xn2">
+        <dc:Bounds x="682" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ttgx85_di" bpmnElement="Flow_0ttgx85">
+        <di:waypoint x="238" y="150" />
+        <di:waypoint x="290" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j3taja_di" bpmnElement="Flow_0j3taja">
+        <di:waypoint x="390" y="150" />
+        <di:waypoint x="450" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zctkgx_di" bpmnElement="Flow_0zctkgx">
+        <di:waypoint x="500" y="190" />
+        <di:waypoint x="500" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09x12oz_di" bpmnElement="Flow_09x12oz">
+        <di:waypoint x="550" y="400" />
+        <di:waypoint x="600" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1414gzu_di" bpmnElement="Flow_1414gzu">
+        <di:waypoint x="700" y="400" />
+        <di:waypoint x="750" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hi3snl_di" bpmnElement="Flow_0hi3snl">
+        <di:waypoint x="800" y="360" />
+        <di:waypoint x="800" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02qiumw_di" bpmnElement="Flow_02qiumw">
+        <di:waypoint x="850" y="290" />
+        <di:waypoint x="902" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fhnh2x_di" bpmnElement="Flow_0fhnh2x">
+        <di:waypoint x="690" y="346" />
+        <di:waypoint x="679" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l6m5l7_di" bpmnElement="Flow_1l6m5l7">
+        <di:waypoint x="650" y="250" />
+        <di:waypoint x="650" y="150" />
+        <di:waypoint x="550" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_1uzycly_di" bpmnElement="Participant_0yltzzo" isHorizontal="true">
+        <dc:Bounds x="132" y="500" width="538" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_19vckkf_di" bpmnElement="Flow_19vckkf">
+        <di:waypoint x="650" y="500" />
+        <di:waypoint x="650" y="440" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
